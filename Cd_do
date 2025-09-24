@@ -1,0 +1,217 @@
+
+label variable zongfen "RIC"
+label variable rjfen "aveRIC1"
+label variable dwmjfen "aveRIC1"
+label variable digitalindex "DE"
+label variable lndigital "ln(DE)"
+label variable chanyejiegou "structure" 
+label variable chengshihualv "urban"
+label variable capital3s "capital"
+label variable fdiper1 "fdi"
+label variable population "size"
+label variable gdpper1 "gdp"
+label variable budget "budget" 
+label variable RD "Gov"
+label variable financial "Fin"
+label variable humancapital "HC"
+label variable digitalinfras "DI"
+label variable newcompany "newfirm"
+label variable touzi "investment"
+label variable wailaibishu1 "CRinvestment"
+label variable vcshumu1 "VC"
+label variable output1 "invention"
+label variable zhuanli1 "patent"
+label variable shangbiao1 "trademark"
+label variable yjbw "the number of post offices per million in each city at the end of 1984"
+label variable Internet "the number of Internet users in each city at the end of 1984"
+label variable RG "location type"
+label variable cp "administrative level type"
+
+
+**********
+*Table 2 Summary statistics
+********** 
+logout, save(mytable) word replace: ///
+ tabstat zongfen rjfen  dwmjfen digitalindex chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras newcompany touzi1 output1 zhuanli1 shangbiao1, ///
+  stats(count mean sd p50 min max) ///
+   c(s) format(%6.4f)	
+**********
+*Table 3 Basic results for the impact of consumer digital engagement on regional innovation capacity
+********** 
+
+xtset id year
+gen lndigital=ln(digitalindex)
+
+   *-column (1)
+reg zongfen lndigital,r
+est sto m1
+
+   *-column (2)
+reg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras,r 
+est sto m2
+
+   *-column (3)
+reg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year,r 
+est sto m3
+
+   *-column (4)
+reg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year i.procode,r
+est sto m4
+
+ *-Export to word
+outreg2 [m1 m2 m3 m4] using Basic.rtf,stats(coef tstat) aster(coef) bdec(4)tdec(2) adds(adj_R2,e(r2_a),F,e(F)) replace
+
+**********
+*Table 4 Regression results of city fixed effects and instrumental variables
+********** 
+
+ *-instrumental variable
+gen iv1=yjbw*l.Internet
+
+   *-column (1)
+xtreg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year,r fe
+est sto m5
+
+   *-column (2)
+ivreg2 zongfen chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year (lndigital=iv1) ,r
+est sto m6
+
+ *-Export to word
+outreg2 [m5 m6] using feIV.rtf,stats(coef tstat) aster(coef) bdec(4)tdec(2) adds(adj_R2,e(r2_a),F,e(F)) replace
+
+
+**********
+*Table 5 Regression results of PSM-DID
+********** 
+
+Code details are listed in (PSM-DID code.do)
+Data used to reproduce Table 5 is (psm-did data.dta)
+
+**********
+*Table 6  Regression results of replacing proxy for the explained variable
+********** 
+
+   *-column (1)
+reg rjfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year,r 
+est sto m7
+
+   *-column (2)
+reg rjfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year i.procode,r 
+est sto m8
+
+   *-column (3)
+reg dwmjfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year,r 
+est sto m9
+
+   *-column (4)
+reg dwmjfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras i.year i.procode,r 
+est sto m10
+ 
+ *-Export to word
+ outreg2 [m7 m8 m9 m10] using table5.rtf,stats(coef tstat) aster(coef) bdec(4)tdec(2) adds(adj_R2,e(r2_a),F,e(F)) replace
+
+**********
+*Table 7  Regression results of mechanisms
+**********
+
+   *-column (1)
+reg output1 lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year i.procode,r
+est sto m11
+
+   *-column (2)
+reg zhuanli1 lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras i.year i.procode,r
+est sto m12
+
+   *-column (3)
+reg shangbiao1 lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras i.year i.procode,r
+
+est sto m13
+
+   *-column (4)
+reg newcompany lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras i.year i.procode,r
+est sto m14
+
+   *-column (5)
+reg touzi1 lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras i.year i.procode,r
+est sto m15
+
+   *-column (6)
+reg wailaibishu1 lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital digitalinfras i.year i.procode,r
+est sto m16
+
+   *-column (7)
+reg vcshumu1 lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year i.procode,r
+est sto m17
+
+ *-Export to word
+outreg2 [m11 m12 m13 m14 m15 m16 m17] using table7.rtf,stats(coef tstat) aster(coef) bdec(4)tdec(2) adds(adj_R2,e(r2_a),F,e(F)) replace
+
+
+**********
+*Table 8  Regression results of eastern, central, and western cities.
+**********
+
+   *-column (1)
+reg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year i.procode,r,if RG==1
+est sto m18
+
+   *-column (2)
+reg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras i.year i.procode,r,if RG==2
+est sto m19
+
+   *-column (3)
+reg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras i.year i.procode,r,if RG==3
+est sto m20
+
+ *-Export to word
+outreg2 [m18 m19 m20] using table8.rtf,stats(coef tstat) aster(coef) bdec(4)tdec(2) adds(adj_R2,e(r2_a),F,e(F)) replace
+
+
+**********
+*Table 9  Regression results of central and peripheral cities
+**********
+
+   *-column (1)
+reg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras i.year i.procode,r,if cp==1
+est sto m21
+
+   *-column (2)
+reg zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras i.year i.procode,r,if cp==2
+est sto m22
+ *-Export to word
+outreg2 [m21 m22] using table9.rtf,stats(coef tstat) aster(coef) bdec(4)tdec(2) adds(R2,e(r2)) replace
+
+
+**********
+*Table 10  Results of generalized quantile regression
+**********
+
+   *-column (1)
+set seed 10101
+qregpd zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras,q(0.1) id(id) fix(procode) optimize(mcmc) noisy draws(1000) burn(100) arate(.5)
+est sto m23
+
+   *-column (2)
+set seed 10101
+qregpd zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras,q(0.25) id(id) fix(procode) optimize(mcmc) noisy draws(1000) burn(100) arate(.5)
+est sto m24
+
+   *-column (3)
+set seed 10101
+qregpd zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras,q(0.5) id(id) fix(procode) optimize(mcmc) noisy draws(1000) burn(100) arate(.5)
+est sto m25
+
+   *-column (4)
+set seed 10101
+qregpd zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial  humancapital  digitalinfras,q(0.75) id(id) fix(procode) optimize(mcmc) noisy draws(1000) burn(100) arate(.5)
+est sto m26
+
+   *-column (5)
+set seed 10101
+qregpd zongfen lndigital chanyejiegou chengshihualv capital3s fdiper1 population  gdpper1 budget RD financial humancapital  digitalinfras,q(0.9) id(id) fix(procode) optimize(mcmc) noisy draws(1000) burn(100) arate(.5)
+est sto m27
+
+ *-Export to word
+outreg2 [m23 m24 m25 m26 m27] using table10.rtf,stats(coef tstat) aster(coef) bdec(4)tdec(2)  replace
+
+
